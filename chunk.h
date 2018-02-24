@@ -10,10 +10,19 @@ typedef enum {
 } OpCode;
 
 typedef struct {
+  int offset;
+  int line;
+} LineStart;
+
+typedef struct {
 	int count;
 	int capacity;
 	uint8_t* code;
-	int* lines;
+
+	int lineCount;
+	int lineCapacity;
+	LineStart* lines;
+
 	ValueArray constants;
 } Chunk;
 

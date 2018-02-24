@@ -5,37 +5,55 @@
 
 void initChunk(Chunk* chunk)
 {
-    chunk->count = 0;
-    chunk->capacity = 0;
-    chunk->code = NULL;
+	chunk->count = 0;
+	chunk->capacity = 0;
+	chunk->code = NULL;
 	chunk->lines = NULL;
+	chunk->lineCount = 0;
+	chunk->lineCapacity = 0;
 	initValueArray(&chunk->constants);
 }
 
 void freeChunk(Chunk* chunk)
 {
-    FREE_ARRAY(uint8_t, chunk->code, chunk->capacity);
-	FREE_ARRAY(int, chunk->lines, chunk->capacity);
+	FREE_ARRAY(uint8_t, chunk->code, chunk->capacity);
+	FREE_ARRAY(int, chunk->lines, chunk->lineCapacity);
 	freeValueArray(&chunk->constants);
-    initChunk(chunk);
+	initChunk(chunk);
 }
 
 void writeChunk(Chunk* chunk, uint8_t byte, int line)
 {
-    if(chunk->capacity < chunk->count + 1)
-    {
-        int oldCapacity = chunk->capacity;
-        chunk->capacity = GROW_CAPACITY(oldCapacity);
-        chunk->code = GROW_ARRAY(chunk->code, uint8_t, oldCapacity, chunk->capacity);
-		chunk->lines = GROW_ARRAY(chunk->lines, int, oldCapacity, chunk->capacity);
-    }
-    chunk->code[chunk->count] = byte;
-	chunk->lines[chunk->count] = line;
-    chunk->count++;
+	if (chunk->capacity < chunk->count + 1)
+	{
+		int oldCapacity = chunk->capacity;
+		chunk->capacity = GROW_CAPACITY(oldCapacity);
+		chunk->code = GROW_ARRAY(chunk->code, uint8_t, oldCapacity, chunk->capacity);
+
+	}
+	chunk->code[chunk->count] = byte;
+	chunk->count++;
+
+	//chunk->lines[chunk->count] = line;
+	if (chunk->lineCount > 0 && chunk->lines[chunk->lineCount - 1].line == line)
+	{
+		return;
+	}
+
+	if (chunk->lineCapacity < chunk->lineCount + 1)
+	{
+		int oldCapacity = chunk->lineCapacity;
+		chunk->lineCapacity = GROW_CAPACITY(oldCapacity);
+		chunk->lines = GROW_ARRAY(chunk->lines, LineStart, oldCapacity, chunk->lineCapacity);
+	}
+
+	LineStart* lineStart = &chunk->lines[chunk->lineCount++];
+	lineStart->offset = chunk->count - 1;
+	lineStart->line = line;
 }
 
 int addConstant(Chunk * chunk, Value value)
 {
-	writeValueArray(&chunk->constants, value); 
+	writeValueArray(&chunk->constants, value);
 	return chunk->constants.count - 1;
 }

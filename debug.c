@@ -14,14 +14,14 @@ void disassembleChunk(Chunk * chunk, const char * name)
 int disassembleInstruction(Chunk * chunk, int offset)
 {
 	printf("%04d ", offset);
-
-	if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1])
+	int line = getLine(chunk, offset);
+	if (offset > 0 && line == getLine(chunk, offset - 1)) 
 	{
 		printf("   | ");
 	}
-	else
+	else 
 	{
-		printf("%4d ", chunk->lines[offset]);
+		printf("%4d ", line);
 	}
 
 	uint8_t instruction = chunk->code[offset];
@@ -34,6 +34,30 @@ int disassembleInstruction(Chunk * chunk, int offset)
 	default:
 		printf("Unknown opcode %d\n", instruction);
 		return offset + 1;
+	}
+}
+
+int getLine(Chunk* chunk, int instruction)
+{
+	int start = 0;
+	int end = chunk->lineCount - 1;
+
+	for (;;)
+	{
+		int mid = (start + end) / 2;
+		LineStart* line = &chunk->lines[mid];
+		if (instruction < line->offset)
+		{
+			end = mid = 1;
+		}
+		else if (mid == chunk->lineCount - 1 || instruction < chunk->lines[mid + 1].offset) 
+		{
+			return line->line;
+		}
+		else
+		{
+			start = mid + 1;
+		}
 	}
 }
 
