@@ -23,12 +23,14 @@
     <ClCompile Include="debug.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="memory.c" />
+    <ClCompile Include="value.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="chunk.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="memory.h" />
+    <ClInclude Include="value.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{89C4CE61-BC5E-494A-925F-EE06255D688F}</ProjectGuid>
