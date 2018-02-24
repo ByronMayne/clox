@@ -42,6 +42,9 @@
 *.idb
 *.pdb
 
+# Visual Studio
+.vs/
+
 # Kernel Module Compile Results
 *.mod*
 *.cmd
@@ -54,3 +57,5 @@ dkms.conf
 Debug/
 
 *.db
+
+*.filters
