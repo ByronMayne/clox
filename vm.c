@@ -5,14 +5,6 @@
 
 VM vm; 
 
-void initVM()
-{
-	resetStack();
-}
-
-void freeVM()
-{
-}
 
 static void resetStack()
 {
@@ -56,6 +48,15 @@ static InterpretResult run()
 
 #undef READ_BYTE
 #undef READ_CONSTANT
+}
+
+void initVM()
+{
+	resetStack();
+}
+
+void freeVM()
+{
 }
 
 InterpretResult interpret(Chunk * chunk)
