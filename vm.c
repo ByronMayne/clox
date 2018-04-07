@@ -48,8 +48,7 @@ static InterpretResult run()
 			case OP_CONSTANT:
 			{
 				Value constant = READ_CONSTANT();
-				printValue(constant);
-				printf("\n");
+				push(constant);
 				break;
 			}
 		}
