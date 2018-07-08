@@ -11,11 +11,11 @@ static void repl()
 	char line[1024];
 	for (;;)
 	{
-		print("> ");
+		printf("> ");
 		
 		if (!fgets(line, sizeof(line), stdin))
 		{
-			print("\n");
+			printf("\n");
 			break;
 		}
 
