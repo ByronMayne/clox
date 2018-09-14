@@ -14,9 +14,11 @@ typedef struct
 
 Parser parser;
 
-static errorAtCurrent(const char* message)
+Chunk* compilingChunk;
+
+static Chunk* currentChunk()
 {
-	errorAt(&parser.current, message);
+	return compilingChunk;
 }
 
 static errorAt(Token* token, const char* message)
@@ -39,17 +41,9 @@ static errorAt(Token* token, const char* message)
 	parser.hadError = true;
 }
 
-bool compile(const char* source, Chunk* chunk)
+static errorAtCurrent(const char* message)
 {
-	initScanner(source);
-
-	parser.hadError = false;
-	parser.inPanicMode = false;
-
-	advance();
-	expression();
-	consume(TOKEN_EOF, "Expected end of session");
-	return !parser.hadError;
+	errorAt(&parser.current, message);
 }
 
 static void advance() {
@@ -71,4 +65,22 @@ static void consume(TokenType type, const char* message)
 		return;
 	}
 	errorAtCurrent(message);
+}
+
+bool compile(const char* source, Chunk* chunk)
+{
+	initScanner(source);
+
+	parser.hadError = false;
+	parser.inPanicMode = false;
+
+	advance();
+	//expression();
+	consume(TOKEN_EOF, "Expected end of session");
+	return !parser.hadError;
+}
+
+static void emitByte(uint8_t byte)
+{
+	writeChunk(currentChunk(), byte, parser.previous.line);
 }
