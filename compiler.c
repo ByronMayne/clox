@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "common.h"
 #include "compiler.h"
 #include "scanner.h";
@@ -6,17 +7,49 @@
 typedef struct
 {
 	Token current;
+	bool hadError;
+	bool inPanicMode;
 	Token previous;
 } Parser;
 
 Parser parser;
 
+static errorAtCurrent(const char* message)
+{
+	errorAt(&parser.current, message);
+}
+
+static errorAt(Token* token, const char* message)
+{
+	if (parser.inPanicMode) return;
+	parser.inPanicMode = true;
+	fprintf(stderr, "[line %d] Error", token->line);
+
+	if (token->type == TOKEN_EOF) {
+		fprintf(stderr, " at end");
+	}
+	else if (token->type == TOKEN_ERROR) {
+		// Nothing.                                                
+	}
+	else {
+		fprintf(stderr, " at '%.*s'", token->length, token->start);
+	}
+
+	fprintf(stderr, ": %s\n", message);
+	parser.hadError = true;
+}
+
 bool compile(const char* source, Chunk* chunk)
 {
 	initScanner(source);
+
+	parser.hadError = false;
+	parser.inPanicMode = false;
+
 	advance();
 	expression();
 	consume(TOKEN_EOF, "Expected end of session");
+	return !parser.hadError;
 }
 
 static void advance() {
@@ -28,4 +61,14 @@ static void advance() {
 
 		errorAtCurrent(parser.current.start);
 	}
+}
+
+static void consume(TokenType type, const char* message)
+{
+	if (parser.current.type == type)
+	{
+		advance();
+		return;
+	}
+	errorAtCurrent(message);
 }
