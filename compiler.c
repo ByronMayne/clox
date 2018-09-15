@@ -12,6 +12,20 @@ typedef struct
 	Token previous;
 } Parser;
 
+typedef enum {
+	PREC_NONE,
+	PREC_ASSIGNMENT,  // =        
+	PREC_OR,          // or       
+	PREC_AND,         // and      
+	PREC_EQUALITY,    // == !=    
+	PREC_COMPARISON,  // < > <= >=
+	PREC_TERM,        // + -      
+	PREC_FACTOR,      // * /      
+	PREC_UNARY,       // ! - +    
+	PREC_CALL,        // . () []  
+	PREC_PRIMARY
+} Precedence;
+
 Parser parser;
 
 Chunk* compilingChunk;
@@ -93,7 +107,7 @@ static void emitBytes(uint8_t byte1, uint8_t byte2)
 	emitByte(byte2);
 }
 
-static void emitReturn() 
+static void emitReturn()
 {
 	emitByte(OP_RETURN);
 }
@@ -101,7 +115,7 @@ static void emitReturn()
 static uint8_t makeConstant(Value value)
 {
 	int constant = addConstant(currentChunk(), value);
-	if (constant > UINT8_MAX) 
+	if (constant > UINT8_MAX)
 	{
 		error("Too many constants in one chunk.");
 		return 0;
@@ -109,10 +123,10 @@ static uint8_t makeConstant(Value value)
 	return (uint8_t)constant;
 }
 
-static void emitConstant(Value value) 
-{       
-  emitBytes(OP_CONSTANT, makeConstant(value));
-}  
+static void emitConstant(Value value)
+{
+	emitBytes(OP_CONSTANT, makeConstant(value));
+}
 
 static void endCompiler()
 {
@@ -131,7 +145,25 @@ static void number()
 	emitConstant(value);
 }
 
-void expression() 
+static void unary()
 {
-	// What goes here?
+	TokenType operatorType = parser.previous.type;
+
+	parsePrecedence(PREC_UNARY);
+
+	switch (operatorType)
+	{
+		case TOKEN_MINUS: emitByte(OP_NEGATE); break;
+		default:
+			return; // Unreachable.
+	}
+}
+
+static void parsePrecedence(Precedence precedence) {
+	// What goes here?                                
+}
+
+void expression()
+{
+	parsePrecedence(PREC_ASSIGNMENT);
 }
