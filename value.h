@@ -29,9 +29,6 @@ typedef struct {
 #define NIL_VAL           ((Value){ VAL_NIL, { .number = 0 } })       
 #define NUMBER_VAL(value) ((Value){ VAL_NUMBER, { .number = value } })
 
-
-typedef double Value;
-
 typedef struct {
 	int capacity;
 	int count;
