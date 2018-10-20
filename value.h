@@ -3,6 +3,21 @@
 
 #include "common.h"
 
+typedef enum {
+	VAL_BOOL,
+	VAL_INT,
+	VAL_NIL
+} ValueType;
+
+typedef struct {
+	ValueType type;
+	union 
+	{
+		bool boolean;
+		double number;
+	} as;
+} Value;
+
 typedef double Value;
 
 typedef struct {
