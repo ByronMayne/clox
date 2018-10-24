@@ -5,7 +5,7 @@
 
 typedef enum {
 	VAL_BOOL,
-	VAL_INT,
+	VAL_NUMBER,
 	VAL_NIL
 } ValueType;
 

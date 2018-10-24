@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include "common.h"
 #include "vm.h"
+#include "value.h"
 #include "compiler.h"
 #include "debug.h"
 #include <stdio.h>
@@ -11,6 +12,17 @@ VM vm;
 static void resetStack()
 {
 	vm.stackTop = vm.stack;
+}
+
+Value pop()
+{
+	vm.stackTop--;
+	return *vm.stackTop;
+}
+
+static Value peek(int distance)
+{
+	return vm.stackTop[-1 - distance];
 }
 
 static void runtimeError(const char* format, ...) {
@@ -31,15 +43,16 @@ static InterpretResult run()
 {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
-#define BINARY_OP(valueType, op) \                               
-	do {
-		\
-			if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) {
+
+#define BINARY_OP(valueType, op) \
+	do { \
+		 \
+			if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) { \
 				\
 					runtimeError("Operands must be numbers."); \
 					return INTERPRET_RUNTIME_ERROR; \
 			} \
-				\
+			  \
 					double b = AS_NUMBER(pop()); \
 					double a = AS_NUMBER(pop()); \
 					push(valueType(a op b)); \
@@ -87,6 +100,9 @@ static InterpretResult run()
 				push(constant);
 				break;
 			}
+			case OP_NIL: push(NIL_VAL); break;
+			case OP_TRUE: push(BOOL_VAL(true)); break;
+			case OP_FALSE: push(BOOL_VAL(false)); break;
 		}
 	}
 
@@ -129,13 +145,3 @@ void push(Value value)
 	vm.stackTop++;
 }
 
-Value pop()
-{
-	vm.stackTop--;
-	return *vm.stackTop;
-}
-
-static Value peek(int distance) 
-{
-	return vm.stackTop[-1 - distance];
-}
