@@ -1,5 +1,7 @@
 #include <stdarg.h>
 #include "common.h"
+#include "object.h"
+#include "memory.h"
 #include "vm.h"
 #include "value.h"
 #include "compiler.h"
@@ -164,10 +166,12 @@ static InterpretResult run()
 void initVM()
 {
 	resetStack();
+	vm.objects = NULL;
 }
 
 void freeVM()
 {
+	freeObjects();
 }
 
 InterpretResult interpret(const char* source)
