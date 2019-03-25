@@ -8,22 +8,22 @@ bool valuesEqual(Value a, Value b)
 	if (a.type != b.type) return false;
 	switch (a.type)
 	{
-	case VAL_BOOL:
-		return AS_BOOL(a) == AS_BOOL(b);
-	case VAL_NIL:
-		return true;
-	case VAL_NUMBER:
-		return AS_NUMBER(a) == AS_NUMBER(b);
-	case VAL_OBJ:
-	{
-		ObjString* stringA = AS_STRING(a);
-		ObjString* stringB = AS_STRING(b);
-		bool isEqual = stringA->length == stringB->length;
-		isEqual &= memcmp(stringA->chars, stringB->chars, stringA->length) == 0;
-		return isEqual;
+		case VAL_BOOL:
+			return AS_BOOL(a) == AS_BOOL(b);
+		case VAL_NIL:
+			return true;
+		case VAL_NUMBER:
+			return AS_NUMBER(a) == AS_NUMBER(b);
+		case VAL_OBJ:
+		{
+			ObjString* stringA = AS_STRING(a);
+			ObjString* stringB = AS_STRING(b);
+			bool isEqual = stringA->length == stringB->length;
+			isEqual &= memcmp(stringA->chars, stringB->chars, stringA->length) == 0;
+			return isEqual;
+		}
 	}
-	return;
-	}
+	return false;
 }
 
 void initValueArray(ValueArray * array)

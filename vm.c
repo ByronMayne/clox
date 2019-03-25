@@ -110,9 +110,10 @@ static InterpretResult run()
 				double a = AS_NUMBER(pop());
 				push(NUMBER_VAL(a + b));
 			}
-			else {
-				runtimeError("Operands must be two numbers or two strings.");
-				return INTERPRET_RUNTIME_ERROR;
+			else if (IS_STRING(peek(0)) && IS_NUMBER(peek(1)))
+			{
+				double b = AS_NUMBER(pop());
+				ObjString* a = AS_STRING(pop());
 			}
 			break;
 		}
